@@ -27,14 +27,17 @@ app.get('/api/hello', function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.get('/api/whoami', (request, response) => {
-  responseObject['ipaddress'] = request.ip;
-  responseObject['language'] = request.get('Accept-Language');
-  responseObject['software'] = request.get('User-Agent');
+app.get('/api/whoami', (req, res) => {
+  const ipaddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const language = req.headers['accept-language'];
+  const software = req.headers['user-agent'];
 
-  response.json(responseObject);
+  res.json({
+      ipaddress: ipaddress,
+      language: language,
+      software: software
+  });
 });
-
 // listen for requests :)
 var listener = app.listen(process.env.PORT || 3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
